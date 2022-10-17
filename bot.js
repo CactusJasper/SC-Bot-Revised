@@ -16,3 +16,6 @@ client.on('message', (message) => {
     if(log !== undefined) logging.logMessage(message, log);
 
 });
+
+
+client.login(config.discord_token);
