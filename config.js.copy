@@ -1,5 +1,4 @@
 module.exports = {
-    db_url: '',
     discord_token: '',
     server_id: '',
     logging_channel: '',
