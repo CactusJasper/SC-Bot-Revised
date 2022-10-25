@@ -5,7 +5,7 @@ const config = require('./config');
 let logging = require('./modules/logging');
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`SC Bot up and running.`);
 });
 
 client.on('message', (message) => {
