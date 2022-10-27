@@ -14,8 +14,6 @@ client.on('message', (message) => {
     // Message Logging Module
     const log = client.channels.cache.find(channel => channel.id === process.env.SC_LOGGING_CHANNEL);
     if(log !== undefined) logging.logMessage(message, log);
-
 });
-
 
 client.login(process.env.SC_DISCORD_TOKEN);
