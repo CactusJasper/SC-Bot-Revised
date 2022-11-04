@@ -1,13 +1,35 @@
 require('dotenv').config()
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({
+    intents: [
+        'Guilds',
+        'GuildMembers',
+        'GuildBans',
+        'GuildEmojisAndStickers',
+        'GuildIntegrations',
+        'GuildWebhooks',
+        'GuildInvites',
+        'GuildVoiceStates',
+        'GuildPresences',
+        'GuildMessages',
+        'GuildMessageReactions',
+        'GuildMessageTyping',
+        'DirectMessages',
+        'DirectMessageReactions',
+        'DirectMessageTyping',
+        'MessageContent',
+        'GuildScheduledEvents',
+        'AutoModerationConfiguration',
+        'AutoModerationExecution'
+    ]
+});
 let logging = require('./modules/logging');
 
 client.on('ready', () => {
     console.log(`SC Bot up and running.`);
 });
 
-client.on('message', (message) => {
+client.on('messageCreate', (message) => {
     if(message.author.bot) return;
     if(message.channel.type == 'dm') return;
     if(message.guild.id !== process.env.SC_SERVER_ID) return;

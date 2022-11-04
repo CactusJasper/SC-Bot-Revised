@@ -1,9 +1,10 @@
 exports.logMessage = (message, logChannel) => {
     let logMessage = '';
+    const attachmentArray = [];
+    message.attachments.forEach((attachment) => attachmentArray.push(attachment));
 
-    if(message.attachments.array().length > 0)
+    if(attachmentArray.length > 0)
     {
-        let attachments = message.attachments;
         if(message.content == '' || message.content == undefined)
             logMessage += `[${message.channel.name}] Attachment sent by  ${message.author.username}:`;
         else
@@ -11,16 +12,22 @@ exports.logMessage = (message, logChannel) => {
 
         if(message.mentions.everyone)
             logMessage += '\nMentioned everyone';
-        else if(message.mentions.members.first())
-            logMessage += mentionsMessage(message.mentions.members.array(), 10);
-
-        logChannel.send(codeBlock(logMessage), attachments.first());
+        else if(message.mentions.members.first()) {
+            const array = [];
+            message.mentions.members.forEach((member) = array.push(member));
+            logMessage += mentionsMessage(array, 10);
+        }
+        logChannel.send(codeBlock(logMessage), attachmentArray[0]);
         return;
     }
 
     logMessage += `[${message.channel.name}] Message by ${message.author.username}: ${message.content}`;
     if(message.mentions.everyone) logMessage += '\nMentioned everyone';
-    else if(message.mentions.members.first()) logMessage += mentionsMessage(message.mentions.members.array(), 10);
+    else if(message.mentions.members.first()) {
+        const array = [];
+        message.mentions.members.forEach((member) = array.push(member));
+        logMessage += mentionsMessage(array, 10);
+    }
 
     logChannel.send(codeBlock(logMessage));
 }
