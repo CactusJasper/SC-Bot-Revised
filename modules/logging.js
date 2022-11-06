@@ -12,9 +12,9 @@ exports.logMessage = (message, logChannel) => {
 
         if(message.mentions.everyone)
             logMessage += '\nMentioned everyone';
-        else if(message.mentions.members.first()) {
+        else if(message.mentions.users.first()) {
             const array = [];
-            message.mentions.members.forEach((member) = array.push(member));
+            message.mentions.users.forEach((member) = array.push(member));
             logMessage += mentionsMessage(array, 10);
         }
         logChannel.send(codeBlock(logMessage), attachmentArray[0]);
@@ -23,9 +23,9 @@ exports.logMessage = (message, logChannel) => {
 
     logMessage += `[${message.channel.name}] Message by ${message.author.username}: ${message.content}`;
     if(message.mentions.everyone) logMessage += '\nMentioned everyone';
-    else if(message.mentions.members.first()) {
+    else if(message.mentions.users.first()) {
         const array = [];
-        message.mentions.members.forEach((member) = array.push(member));
+        message.mentions.users.forEach((member) = array.push(member));
         logMessage += mentionsMessage(array, 10);
     }
 
