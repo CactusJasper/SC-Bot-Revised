@@ -12,6 +12,8 @@ exports.logMessage = (message, logChannel) => {
 
         if(message.mentions.everyone)
             logMessage += '\nMentioned everyone';
+        else if(message.mentions.repliedUser) 
+            logMessage += `\nReplied to ${message.mentions.repliedUser.username}`;
         else if(message.mentions.users.first()) {
             const array = [];
             message.mentions.users.forEach((member) = array.push(member));
@@ -23,6 +25,8 @@ exports.logMessage = (message, logChannel) => {
 
     logMessage += `[${message.channel.name}] Message by ${message.author.username}: ${message.content}`;
     if(message.mentions.everyone) logMessage += '\nMentioned everyone';
+    else if(message.mentions.repliedUser) 
+        logMessage += `\nReplied to ${message.mentions.repliedUser.username}`;
     else if(message.mentions.users.first()) {
         const array = [];
         message.mentions.users.forEach((member) = array.push(member));
