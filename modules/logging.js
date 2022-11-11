@@ -1,5 +1,6 @@
 exports.logMessage = (message, logChannel) => {
     let logMessage = '';
+	const users = message.mentions.users.map((user) => user);
     const attachmentArray = [];
     message.attachments.forEach((attachment) => attachmentArray.push(attachment));
 
@@ -12,26 +13,20 @@ exports.logMessage = (message, logChannel) => {
 
         if(message.mentions.everyone)
             logMessage += '\nMentioned everyone';
-        else if(message.mentions.repliedUser) 
+        else if(message.mentions.repliedUser)
             logMessage += `\nReplied to ${message.mentions.repliedUser.username}`;
-        else if(message.mentions.users.first()) {
-            const array = [];
-            message.mentions.users.forEach((member) = array.push(member));
-            logMessage += mentionsMessage(array, 10);
-        }
+        else if(users.length > 0)
+            logMessage += mentionsMessage(users, 10);
         logChannel.send(codeBlock(logMessage), attachmentArray[0]);
         return;
     }
 
     logMessage += `[${message.channel.name}] Message by ${message.author.username}: ${message.content}`;
     if(message.mentions.everyone) logMessage += '\nMentioned everyone';
-    else if(message.mentions.repliedUser) 
+    else if(message.mentions.repliedUser)
         logMessage += `\nReplied to ${message.mentions.repliedUser.username}`;
-    else if(message.mentions.users.first()) {
-        const array = [];
-        message.mentions.users.forEach((member) = array.push(member));
-        logMessage += mentionsMessage(array, 10);
-    }
+    else if(users.length > 0)
+        logMessage += mentionsMessage(users, 10);
 
     logChannel.send(codeBlock(logMessage));
 }
