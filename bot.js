@@ -35,10 +35,12 @@ let isChristmas = false;
 client.on(Discord.Events.ClientReady, async () => {
     console.log(`SC Bot up and running.`);
     const channel = await client.channels.fetch('851504886854975492');
+    const announcments = await client.channels.fetch('998476542046908498');
     if(!isChristmas) await channel.sendTyping();
     setInterval(async () => {
         if(new Date().toISOString().match('2022-12-25T00:00:00.000Z')) isChristmas = true;
         if(!isChristmas) await channel.sendTyping();
+        if(isChristmas) await announcments.send(`@everyone Merry Christmas the time is ${new Date().toUTCString()}`);
     }, (1000 * 10) - 500);
 });
 
