@@ -40,7 +40,7 @@ client.on(Discord.Events.ClientReady, async () => {
     setInterval(async () => {
         if(new Date().toISOString().match('2022-12-25T00:00:00.000Z')) isChristmas = true;
         if(!isChristmas) await channel.sendTyping();
-        if(isChristmas) await announcments.send(`@everyone Merry Christmas the time is ${new Date().toUTCString()}`);
+        if(isChristmas) await announcments.send(`Merry Christmas from Jasper the time is ${new Date().toUTCString()}`);
     }, (1000 * 10) - 500);
 });
 
