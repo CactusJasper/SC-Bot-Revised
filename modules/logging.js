@@ -1,6 +1,6 @@
 exports.logMessage = (message, logChannel) => {
     let logMessage = '';
-	const users = message.mentions.users.map((user) => user);
+	const users = message.mentions.parsedUsers.map((user) => user);
     const attachmentArray = [];
     message.attachments.forEach((attachment) => attachmentArray.push(attachment));
 
