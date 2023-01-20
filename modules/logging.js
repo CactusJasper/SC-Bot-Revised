@@ -31,9 +31,63 @@ exports.logMessage = (message, logChannel) => {
     logChannel.send(codeBlock(logMessage));
 }
 
+exports.logLargeMessages = async (message, logChannel) => {
+    let messageArray = [];
+    const users = message.mentions.users.map((user) => user);
+    const attachmentArray = [];
+    message.attachments.forEach((attachment) => attachmentArray.push(attachment));
+
+    if(attachmentArray.length > 0) {
+        if(message.content == '' || message.content == undefined) {
+            messageArray.push(codeBlock(`[${message.channel.name}] Attachment sent by  ${message.author.username}:`));
+            const promises = messageArray.map((message) => logChannel.send(message));
+            await Promise.all(promises);
+            return;
+        }
+        
+        contentToMessageArray(message, users).forEach((message) => messageArray.push(message));
+        const promises = messageArray.map((message) => logChannel.send(message));
+        await Promise.all(promises);
+        return;
+    }
+
+    contentToMessageArray(message, users).forEach((message) => messageArray.push(message));
+    const promises = messageArray.map((message) => logChannel.send(message));
+    await Promise.all(promises);
+}
+
+const contentToMessageArray = (message, users) => {
+    let messageArray = [];
+    const headerText = `[${message.channel.name}] Message by ${message.author.username} - ID ${message.id}:`;
+    const headerTextLength = headerText.length + codeBlock('').length;
+    const messageChunks = chunkString(message.content, 1990 - headerTextLength);
+    for(let i = 0; i < messageChunks.length; i++) {
+        messageArray.push(codeBlock(`[${message.channel.name}] Message by ${message.author.username} - ID ${message.id}: ${messageChunks[i]}`));
+    }
+
+    // Create a mentions end message if required
+    let endMessage = '';
+    if(message.mentions.everyone) {
+        endMessage += '\nMentioned everyone';
+        messageArray.push(codeBlock(endMessage));
+    } else if(message.mentions.repliedUser) {
+        endMessage += `\nReplied to ${message.mentions.repliedUser.username}`;
+        messageArray.push(codeBlock(endMessage));
+    } else if(users.length > 0) {
+        endMessage += mentionsMessage(users, 10);
+        messageArray.push(codeBlock(endMessage));
+    }
+
+    return messageArray;
+}
+
 const codeBlock = (text) =>
 {
     return "```" + '\n' + text + "\n```";
+}
+
+function chunkString(str, length) {
+    return str.match(new RegExp('.{1,' + length + '}', 'g'));
 }
 
 function mentionsMessage(members, limit) {

@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { ChannelType } = require('discord.js');
+const { ChannelType, codeBlock } = require('discord.js');
 const Discord = require('discord.js');
 const client = new Discord.Client({
     intents: [
@@ -47,7 +47,10 @@ client.on(Discord.Events.MessageCreate, (message) => {
     //if(message.content === 'test') message.react('<:sadge:851788592221126656>');
     // Message Logging Module
     const log = client.channels.cache.find(channel => channel.id === process.env.SC_LOGGING_CHANNEL);
-    if(log !== undefined) logging.logMessage(message, log);
+    const headerText = `[${message.channel.name}] Message by ${message.author.username}:`;
+    const headerTextLength = headerText.length + codeBlock('').length;
+    if(log !== undefined && message.content.length <= 2000 - headerTextLength) logging.logMessage(message, log);
+    if(log !== undefined && message.content.length > 2000 - headerTextLength) logging.logLargeMessages(message, log);
 });
 
 client.login(process.env.SC_DISCORD_TOKEN);
