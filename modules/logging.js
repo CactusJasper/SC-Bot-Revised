@@ -7,7 +7,7 @@ exports.logMessage = (message, logChannel) => {
     if(attachmentArray.length > 0)
     {
         if(message.content == '' || message.content == undefined)
-            logMessage += `[${message.channel.name}] Attachment sent by  ${message.author.username}:`;
+            logMessage += `[${message.channel.name}] Attachment sent by  ${message.author.username}: ${message.attachments.first()}`;
         else
             logMessage += `[${message.channel.name}] Message by ${message.author.username}: ${message.content}`;
 
@@ -39,7 +39,7 @@ exports.logLargeMessages = async (message, logChannel) => {
 
     if(attachmentArray.length > 0) {
         if(message.content == '' || message.content == undefined) {
-            messageArray.push(codeBlock(`[${message.channel.name}] Attachment sent by  ${message.author.username}:`));
+            messageArray.push(codeBlock(`[${message.channel.name}] Attachment sent by  ${message.author.username}: ${message.attachments.first()}`));
             const promises = messageArray.map((message) => logChannel.send(message));
             await Promise.all(promises);
             return;
@@ -87,14 +87,14 @@ const codeBlock = (text) =>
 }
 
 function chunkString(str, size) {
-	const numChunks = Math.ceil(str.length / size)
-	const chunks = new Array(numChunks)
+	const numChunks = Math.ceil(str.length / size);
+	const chunks = new Array(numChunks);
 
 	for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
-		chunks[i] = str.substr(o, size)
+		chunks[i] = str.substr(o, size);
 	}
 
-	return chunks
+	return chunks;
     //return str.match(new RegExp('(.|[\r\n]){1,' + size + '}', 'g'));
 }
 
