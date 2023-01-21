@@ -58,6 +58,29 @@ client.on(Discord.Events.ClientReady, async () => {
     //TODO: Print cache stats of the bot
 });
 
+client.on(Discord.Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	if (interaction.commandName === 'test') {
+		const modal = new ModalBuilder()
+			.setCustomId('unnTestModal')
+			.setTitle('Testing Discord Modal Functionality');
+
+		// TODO: Add components to modal...
+        const testInput = new TextInputBuilder()
+			.setCustomId('someRandomTestInput')
+		    // The label is the prompt the user sees for this input
+			.setLabel("A Random Test input it uses type short :)")
+		    // Short means only a single line of text
+			.setStyle(Discord.TextInputStyle.Short);
+
+        const firstActionRow = new ActionRowBuilder().addComponents(testInput);
+        modal.addComponents(firstActionRow);
+
+        await interaction.showModal(modal);
+	}
+});
+
 client.on(Discord.Events.MessageCreate, (message) => {
     if(message.author.bot) return;
     if(message.channel.type == ChannelType.DM) {
