@@ -1,4 +1,5 @@
-require('dotenv').config()
+require('dotenv').config();
+const fs = require('fs');
 const { ChannelType, codeBlock } = require('discord.js');
 const Discord = require('discord.js');
 const client = new Discord.Client({
@@ -40,7 +41,7 @@ let logging = require('./modules/logging');
 let moderation = require('./modules/moderation');
 
 client.on(Discord.Events.ClientReady, async () => {
-    console.log(`SC Bot up and running.`);
+    debugLog(`SC Bot started at (${new Date().toUTCString()}) and is running.\n`);
     client.user.setPresence({ 
         activities: [
             {
@@ -54,8 +55,6 @@ client.on(Discord.Events.ClientReady, async () => {
     logCacheStats(true);
     // Log Cache Stats every 30 minutes
     setTimeout(logCacheStats, (1000 * 60) * 30);
-    
-    //TODO: Print cache stats of the bot
 });
 
 client.on(Discord.Events.InteractionCreate, async interaction => {
@@ -109,10 +108,11 @@ function removePunctuation(str) {
 	return str.replace(/[&\/\\#,+\(\)$~%\.!^'"\;:*?\[\]<>{}]/g, '');
 };
 
+// TODO: Add logging to a file
 function logCacheStats(minimal = false) {
-    console.log(`\nCache Stats ${minimal ? 'at bot startup' : 'at ' + new Date().toUTCString()}`);
-    console.log(`User Cache size: ${client.users.cache.size} Users`);
-    console.log(`Channel Cache size: ${client.channels.cache.size} Channels`);
+    let statMessage = `Cache Stats ${minimal ? 'at bot startup' : 'at ' + new Date().toUTCString()}`;
+    statMessage += `\nUser Cache size: ${client.users.cache.size} Users`;
+    statMessage += `\nChannel Cache size: ${client.channels.cache.size} Channels`;
 
     if(!minimal) {
         let messageCacheSize = 0;
@@ -120,6 +120,20 @@ function logCacheStats(minimal = false) {
             if(channel.isTextBased())
                 messageCacheSize += channel.messages.cache.size;
         });
-        console.log(`Message Cache size: ${messageCacheSize}`);
+        statMessage += `\nMessage Cache size: ${messageCacheSize}`;
     }
+    statMessage += '\n';
+
+    debugLog(statMessage);
+}
+
+function debugLog(message) {
+    if(!message) return;
+    console.log(message);
+    if(!fs.existsSync('./debugLog.unn')) {
+        fs.writeFileSync('./debugLog.unn', message);
+        return;
+    }
+    
+    fs.appendFileSync('./debugLog.unn', message);
 }
