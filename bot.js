@@ -30,7 +30,7 @@ const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         ...Discord.Options.DefaultMakeCacheSettings,
         GuildMemberManager: {
-            maxSize: 500,
+            maxSize: 200,
             keepOverLimit: member => member.id === client.user.id
         }
     }),
@@ -40,6 +40,10 @@ const client = new Discord.Client({
             interval: 3600,
             lifetime: 1800
         },
+        guildMembers: {
+            interval: 3600,
+            lifetime: 21600
+        }
     },
     ws: {
         compress: true,
