@@ -27,23 +27,11 @@ const client = new Discord.Client({
         'CHANNEL',
         'MESSAGE'
     ],
-    makeCache: Discord.Options.cacheWithLimits({
-        ...Discord.Options.DefaultMakeCacheSettings,
-        GuildMemberManager: {
-            maxSize: 400,
-            keepOverLimit: member => member.id === client.user.id
-        }
-    }),
     sweepers: {
         ...Discord.Options.DefaultSweeperSettings,
         messages: {
             interval: 3600,
             lifetime: 1800
-        },
-        guildMembers: {
-            interval: 3600,
-            lifetime: 21600,
-            filter: member => member.id === client.user.id
         }
     },
     presence: 'Just your friendly neighbourhood watch'
@@ -60,9 +48,11 @@ client.on(Discord.Events.ClientReady, async () => {
                 type: Discord.ActivityType.Watching
             }
         ],
-        status: Discord.PresenceUpdateStatus.Idle
+        status: Discord.PresenceUpdateStatus.DoNotDisturb
     });
     client.user.setStatus(Discord.PresenceUpdateStatus.Idle);
+    console.log(`User Cache size: ${client.users.cache.size} Users`);
+    console.log(`Channel Cache size: ${client.channels.cache.size} Channels`);
     //TODO: Print cache stats of the bot
 });
 
