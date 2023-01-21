@@ -30,7 +30,7 @@ const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         ...Discord.Options.DefaultMakeCacheSettings,
         GuildMemberManager: {
-            maxSize: 100,
+            maxSize: 400,
             keepOverLimit: member => member.id === client.user.id
         }
     }),
@@ -45,9 +45,6 @@ const client = new Discord.Client({
             lifetime: 21600,
             filter: member => member.id === client.user.id
         }
-    },
-    ws: {
-        compress: true,
     },
     presence: 'Just your friendly neighbourhood watch'
 });
