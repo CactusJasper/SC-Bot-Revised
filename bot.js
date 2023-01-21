@@ -131,9 +131,9 @@ function debugLog(message) {
     if(!message) return;
     console.log(message);
     if(!fs.existsSync('./debugLog.unn')) {
-        fs.writeFileSync('./debugLog.unn', message);
+        fs.writeFileSync('./debugLog.unn', `\n${message}`);
         return;
     }
     
-    fs.appendFileSync('./debugLog.unn', message);
+    fs.appendFileSync('./debugLog.unn', `\n${message}`);
 }
