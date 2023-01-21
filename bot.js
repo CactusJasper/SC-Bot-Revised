@@ -53,6 +53,17 @@ let moderation = require('./modules/moderation');
 
 client.on(Discord.Events.ClientReady, async () => {
     console.log(`SC Bot up and running.`);
+    client.user.setPresence({ 
+        activities: [
+            {
+                name: 'your friendly neighbourhood watch',
+                type: Discord.ActivityType.Watching
+            }
+        ],
+        status: Discord.PresenceUpdateStatus.Idle
+    });
+    client.user.setStatus(Discord.PresenceUpdateStatus.Idle);
+    //TODO: Print cache stats of the bot
 });
 
 client.on(Discord.Events.MessageCreate, (message) => {
