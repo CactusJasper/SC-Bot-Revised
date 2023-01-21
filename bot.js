@@ -51,8 +51,10 @@ client.on(Discord.Events.ClientReady, async () => {
         status: Discord.PresenceUpdateStatus.DoNotDisturb
     });
     client.user.setStatus(Discord.PresenceUpdateStatus.Idle);
-    console.log(`User Cache size: ${client.users.cache.size} Users`);
-    console.log(`Channel Cache size: ${client.channels.cache.size} Channels`);
+    logCacheStats(true);
+    // Log Cache Stats every 30 minutes
+    setTimeout(logCacheStats, (1000 * 60) * 30);
+    
     //TODO: Print cache stats of the bot
 });
 
@@ -83,3 +85,18 @@ function removePunctuation(str) {
 
 	return str.replace(/[&\/\\#,+\(\)$~%\.!^'"\;:*?\[\]<>{}]/g, '');
 };
+
+function logCacheStats(minimal = false) {
+    console.log(`\nCache Stats ${minimal ? 'at bot startup' : 'at ' + new Date().toUTCString()}`);
+    console.log(`User Cache size: ${client.users.cache.size} Users`);
+    console.log(`Channel Cache size: ${client.channels.cache.size} Channels`);
+
+    if(!minimal) {
+        let messageCacheSize = 0;
+        client.guilds.cache.find((guild) => guild.id === process.env.SC_SERVER_ID).channels.cache.forEach((channel) => {
+            if(channel.isTextBased())
+                messageCacheSize += channel.messages.cache.size;
+        });
+        console.log(`Message Cache size: ${messageCacheSize}`);
+    }
+}
