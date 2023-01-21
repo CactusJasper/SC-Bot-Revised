@@ -42,7 +42,8 @@ const client = new Discord.Client({
         },
         guildMembers: {
             interval: 3600,
-            lifetime: 21600
+            lifetime: 21600,
+            filter: member => member.id === client.user.id
         }
     },
     ws: {
