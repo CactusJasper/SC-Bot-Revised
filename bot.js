@@ -26,7 +26,25 @@ const client = new Discord.Client({
     partials: [
         'CHANNEL',
         'MESSAGE'
-    ]
+    ],
+    makeCache: Discord.Options.cacheWithLimits({
+        ...Discord.Options.DefaultMakeCacheSettings,
+        GuildMemberManager: {
+            maxSize: 500,
+            keepOverLimit: member => member.id === client.user.id
+        }
+    }),
+    sweepers: {
+        ...Discord.Options.DefaultSweeperSettings,
+        messages: {
+            interval: 3600,
+            lifetime: 1800
+        },
+    },
+    ws: {
+        compress: true,
+    },
+    presence: 'Just your friendly neighbourhood watch'
 });
 let logging = require('./modules/logging');
 let moderation = require('./modules/moderation');
