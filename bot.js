@@ -51,10 +51,10 @@ client.on(Discord.Events.ClientReady, async () => {
         ],
         status: Discord.PresenceUpdateStatus.DoNotDisturb
     });
-    client.user.setStatus(Discord.PresenceUpdateStatus.Idle);
+    client.user.setStatus(Discord.PresenceUpdateStatus.DoNotDisturb);
     logCacheStats(true);
     // Log Cache Stats every 30 minutes
-    setTimeout(logCacheStats, (1000 * 60) * 30);
+    setInterval(() => logCacheStats(), (1000 * 60) * 30);
 });
 
 client.on(Discord.Events.InteractionCreate, async interaction => {
