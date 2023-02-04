@@ -1,6 +1,6 @@
 require('dotenv').config();
 const fs = require('fs');
-const { ChannelType, codeBlock } = require('discord.js');
+const { codeBlock } = require('discord.js');
 const Discord = require('discord.js');
 const client = new Discord.Client({
     intents: [
@@ -39,6 +39,40 @@ const client = new Discord.Client({
 });
 let logging = require('./modules/logging');
 let moderation = require('./modules/moderation');
+const { ModalHandleInteractions } = require('./modules/modalHandler');
+const { InteractionsHandler } = require('./modules/interactionHandler');
+const { REST, Routes } = require('discord.js');
+
+const commands = [];
+// Grab all the command files from the commands directory you created earlier
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	commands.push(command.data.toJSON());
+}
+
+// Construct and prepare an instance of the REST module
+const rest = new REST({ version: '10' }).setToken(process.env.SC_DISCORD_TOKEN);
+
+// and deploy your commands!
+(async () => {
+	try {
+		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+		// The put method is used to fully refresh all commands in the guild with the current set
+		const data = await rest.put(
+			Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.SC_SERVER_ID),
+			{ body: commands },
+		);
+
+		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+	} catch (error) {
+		// And of course, make sure you catch and log any errors!
+		console.error(error);
+	}
+})();
 
 client.on(Discord.Events.ClientReady, async () => {
     debugLog(`SC Bot started at (${new Date().toUTCString()}) and is running.\n`);
@@ -58,38 +92,67 @@ client.on(Discord.Events.ClientReady, async () => {
 });
 
 client.on(Discord.Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+	try {
+		// TODO: handle large confession messages over 2k chars
+		if(interaction.isButton() && interaction.customId === 'approveConfession') {
+			if(!canApprove(interaction.member.id)) {
+				interaction.reply({ content: 'You are not authorised to approve confessions...', ephemeral: true });
+				return;
+			}
 
-	if (interaction.commandName === 'test') {
-		const modal = new ModalBuilder()
-			.setCustomId('unnTestModal')
-			.setTitle('Testing Discord Modal Functionality');
+			interaction.reply({ content: 'Confession Approved...', ephemeral: true });
+			await interaction.message.delete();
+			const confessionChannel = client.channels.cache.find(channel => channel.id === process.env.CONFESSION_CHANNEL_ID);
+			if(confessionChannel) confessionChannel.send(interaction.message.content);
+			return;
+		}
 
-		// TODO: Add components to modal...
-        const testInput = new TextInputBuilder()
-			.setCustomId('someRandomTestInput')
-		    // The label is the prompt the user sees for this input
-			.setLabel("A Random Test input it uses type short :)")
-		    // Short means only a single line of text
-			.setStyle(Discord.TextInputStyle.Short);
+		if(interaction.isButton() && interaction.customId === 'declineConfession' && canApprove(interaction.member.id)) {
+			if(!canApprove(interaction.member.id)) {
+				interaction.reply({ content: 'You are not authorised to decline confessions...', ephemeral: true });
+				return;
+			}
 
-        const firstActionRow = new ActionRowBuilder().addComponents(testInput);
-        modal.addComponents(firstActionRow);
+			interaction.reply({ content: 'Confession Declined...', ephemeral: true });
+			await interaction.message.delete();
+			return;
+		}
 
-        await interaction.showModal(modal);
+		if(interaction.isModalSubmit()) {
+			await ModalHandleInteractions(interaction, client);
+			return;
+		}
+
+		if(interaction.isChatInputCommand()) {
+			await InteractionsHandler(interaction, client);
+			return;
+		}
+	} catch(err) {
+		debugLog(`\nError Occured: ${err}`);
 	}
 });
 
+function canApprove(memberId) {
+	switch(memberId) {
+		case '228618507955208192': // Wolfy
+			return true;
+		case '217387293571284992': // Jasper
+			return true;
+		case '707375823484616795': // Jack
+			return true;
+		default:
+			return false;
+	}
+}
+
 client.on(Discord.Events.MessageCreate, (message) => {
     if(message.author.bot) return;
-    if(message.channel.type == ChannelType.DM) {
+    if(message.channel.type == Discord.ChannelType.DM) {
         const channel = client.channels.cache.find(channel => channel.id === message.channelId);
         moderation.dmModeration(message, channel);
         return;
     }
     if(message.guild.id !== process.env.SC_SERVER_ID) return;
-    //moderation.clasifyMessage(message);
-    //if(message.content === 'test') message.react('<:sadge:851788592221126656>');
     // Message Logging Module
     const log = client.channels.cache.find(channel => channel.id === process.env.SC_LOGGING_CHANNEL);
     const headerText = `[${message.channel.name}] Message by ${message.author.username}:`;
@@ -99,14 +162,6 @@ client.on(Discord.Events.MessageCreate, (message) => {
 });
 
 client.login(process.env.SC_DISCORD_TOKEN);
-
-function removePunctuation(str) {
-	if (typeof str !== 'string') {
-		throw new TypeError('Expected a string');
-	}
-
-	return str.replace(/[&\/\\#,+\(\)$~%\.!^'"\;:*?\[\]<>{}]/g, '');
-};
 
 // TODO: Add logging to a file
 function logCacheStats(minimal = false) {
