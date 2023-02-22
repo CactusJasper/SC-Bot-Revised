@@ -7,7 +7,7 @@ exports.logMessage = (message, logChannel) => {
     if(attachmentArray.length > 0)
     {
         if(message.content == '' || message.content == undefined)
-            logMessage += `[${message.channel.name}] Attachment sent by  ${message.author.username}: ${message.attachments.first()}`;
+            logMessage += `[${message.channel.name}] Attachment sent by  ${message.author.username}: ${message.attachments.first().url}`;
         else
             logMessage += `[${message.channel.name}] Message by ${message.author.username}: ${message.content}`;
 
@@ -17,7 +17,7 @@ exports.logMessage = (message, logChannel) => {
             logMessage += `\nReplied to ${message.mentions.repliedUser.username}`;
         else if(users.length > 0)
             logMessage += mentionsMessage(users, 10);
-        logChannel.send(codeBlock(logMessage), attachmentArray[0]);
+        logChannel.send(codeBlock(logMessage), attachmentArray[0].url);
         return;
     }
 
@@ -39,7 +39,7 @@ exports.logLargeMessages = async (message, logChannel) => {
 
     if(attachmentArray.length > 0) {
         if(message.content == '' || message.content == undefined) {
-            messageArray.push(codeBlock(`[${message.channel.name}] Attachment sent by  ${message.author.username}: ${message.attachments.first()}`));
+            messageArray.push(codeBlock(`[${message.channel.name}] Attachment sent by  ${message.author.username}: ${message.attachments.first().url}`));
             const promises = messageArray.map((message) => logChannel.send(message));
             await Promise.all(promises);
             return;
