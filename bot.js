@@ -145,7 +145,7 @@ function canApprove(memberId) {
 }
 
 client.on(Discord.Events.MessageCreate, (message) => {
-    /*if(message.author.bot) return;
+    if(message.author.bot) return;
     if(message.channel.type == Discord.ChannelType.DM) {
         const channel = client.channels.cache.find(channel => channel.id === message.channelId);
         moderation.dmModeration(message, channel);
@@ -157,7 +157,7 @@ client.on(Discord.Events.MessageCreate, (message) => {
     const headerText = `[${message.channel.name}] Message by ${message.author.username}:`;
     const headerTextLength = headerText.length + codeBlock('').length;
     if(log !== undefined && message.content.length <= 2000 - headerTextLength) logging.logMessage(message, log);
-    if(log !== undefined && message.content.length > 2000 - headerTextLength) logging.logLargeMessages(message, log);*/
+    if(log !== undefined && message.content.length > 2000 - headerTextLength) logging.logLargeMessages(message, log);
 });
 
 client.login(process.env.SC_DISCORD_TOKEN);
