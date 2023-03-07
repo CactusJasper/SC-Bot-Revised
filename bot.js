@@ -1,5 +1,6 @@
 require('dotenv').config();
 const fs = require('fs');
+let mongoose = require('mongoose');
 const { codeBlock } = require('discord.js');
 const Discord = require('discord.js');
 const client = new Discord.Client({
@@ -55,6 +56,12 @@ for (const file of commandFiles) {
 
 // Construct and prepare an instance of the REST module
 const rest = new REST({ version: '10' }).setToken(process.env.SC_DISCORD_TOKEN);
+
+// Connect to DB / Load Toxicity modules model / Start Web Server / Start Discord Bot Client
+mongoose.connect(process.env.DB_CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+    console.log(`Connected to Database Server`);
+}).catch((err) => console.error(err));
+let db = mongoose.connection;
 
 // and deploy your commands!
 (async () => {

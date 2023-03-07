@@ -1,3 +1,5 @@
+let ChatLog = require('../models/chatLog');
+
 exports.logMessage = (message, logChannel) => {
     let logMessage = '';
 	const users = message.mentions.parsedUsers.map((user) => user);
@@ -29,6 +31,15 @@ exports.logMessage = (message, logChannel) => {
         logMessage += mentionsMessage(users, 10);
 
     logChannel.send(codeBlock(logMessage));
+
+	ChatLog.create({
+		channelId: message.channel.id,
+		channelName: message.channel.name,
+		authorId: message.author.id,
+		authorName: message.author.username,
+		chatMessage: message.content,
+		attachments: attachmentArray
+	}).catch((err) => console.log(err));
 }
 
 exports.logLargeMessages = async (message, logChannel) => {
@@ -54,6 +65,15 @@ exports.logLargeMessages = async (message, logChannel) => {
     contentToMessageArray(message, users).forEach((message) => messageArray.push(message));
     const promises = messageArray.map((message) => logChannel.send(message));
     await Promise.all(promises);
+
+	ChatLog.create({
+		channelId: message.channel.id,
+		channelName: message.channel.name,
+		authorId: message.author.id,
+		authorName: message.author.username,
+		chatMessage: message.content,
+		attachments: attachmentArray
+	}).catch((err) => console.log(err));
 }
 
 const contentToMessageArray = (message, users) => {
